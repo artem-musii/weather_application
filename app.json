@@ -28,6 +28,10 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "permissions": [
+      "ios.permission.LOCATION_ALWAYS",
+      "android.permission.ACCESS_FINE_LOCATION"
+    ]
   }
 }

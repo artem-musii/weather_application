@@ -1,20 +1,24 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React from 'react';
+import { QueryClient, QueryClientProvider } from 'react-query';
+import { ForecastData } from './src/components/forecast-data.component';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import { Settings } from './src/components/settings.component';
 
-export default function App() {
+function App() {
+  const queryClinet = new QueryClient();
+  const Stack = createStackNavigator();
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <QueryClientProvider client={queryClinet}>
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName="Forecast">
+          <Stack.Screen name="Forecast" component={ForecastData} options={{ headerShown: false }} />
+          <Stack.Screen name="Settings" component={Settings} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </QueryClientProvider>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+export default App;
