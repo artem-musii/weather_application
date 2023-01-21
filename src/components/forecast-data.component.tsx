@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useQuery } from 'react-query';
-import { Text, View, StyleSheet, FlatList, ScrollView } from 'react-native';
+import { Text, View, StyleSheet, FlatList, ScrollView, SafeAreaView } from 'react-native';
 import { requestLocationPermission } from '../services/permissions.service';
 import { useNavigation } from '@react-navigation/native';
 import { getForecast } from '../services/forecast.service';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Dimensions } from 'react-native';
 import Logo from '../assets/images/sun-cloud.svg';
 import Humidity from '../assets/images/humidity.svg';
 import Rain from '../assets/images/rain.svg';
@@ -33,7 +32,7 @@ export const ForecastData: React.FC = () => {
       flex: 1,
       flexDirection: 'column',
       alignItems: 'center',
-      paddingTop: 64,
+      paddingTop: 40,
       paddingHorizontal: 40,
     },
     header: {
@@ -128,107 +127,115 @@ export const ForecastData: React.FC = () => {
     const dayForecast = forecastData.list.slice(0, 8);
     const nextForecast = forecastData.list.filter((_, i) => i % 8 === 0);
     const date = new Date(forecastData.list[0].dt * 1000);
-    const day = date.toLocaleString('default', { day: 'numeric' });
-    const monthName = date.toLocaleString('default', { month: 'short' });
+    const day = date.toLocaleString('en-US', { day: 'numeric' });
+    const monthName = date.toLocaleString('en-US', { month: 'short' });
     console.log(lat, lon);
 
     return (
       <LinearGradient colors={['#29b2dd', '#3ad', '#2dc8ea']}>
-        <ScrollView>
-          <View style={styles.container}>
-            <View style={styles.header}>
-              <Text style={styles.text}>{forecastData.city.name}</Text>
+        <SafeAreaView>
+          <ScrollView>
+            <View style={styles.container}>
+              <View style={styles.header}>
+                <Text style={styles.text}>{forecastData.city.name}</Text>
 
-              <Text onPress={() => navigation.navigate('Settings' as never)} style={styles.text}>
-                Settings
-              </Text>
-            </View>
-
-            <View>
-              <Logo height="180px" />
-            </View>
-
-            <Text style={styles.temp}>{Math.round(forecastData.list[0].main.temp - 273.15)}°</Text>
-
-            <Text style={styles.description}>
-              {forecastData.list[0].weather[0].main}
-              {'\n'}
-              Max.{Math.round(forecastData.list[0].main.temp_max - 273.15)}° Min.
-              {Math.round(forecastData.list[0].main.temp_min - 273.15)}°
-            </Text>
-
-            <View style={styles.weatherBlock}>
-              <View style={styles.currentWeather}>
-                <View style={styles.currentWeatherData}>
-                  <Rain height="28px" width="28px" />
-                  <Text style={styles.currentWeatherText}>{forecastData.list[0].pop * 100}%</Text>
-                </View>
-
-                <View style={styles.currentWeatherData}>
-                  <Humidity height="28px" width="20px" />
-                  <Text style={styles.currentWeatherText}>
-                    {forecastData.list[0].main.humidity}%
-                  </Text>
-                </View>
-
-                <View style={styles.currentWeatherData}>
-                  <Wind height="28px" width="28px" />
-                  <Text style={styles.currentWeatherText}>
-                    {Math.round(forecastData.list[0].wind.speed * 3.6)}km/h
-                  </Text>
-                </View>
-              </View>
-            </View>
-
-            <View style={styles.weatherBlock}>
-              <View style={styles.weatherBlockTitle}>
-                <Text style={styles.title}>Today</Text>
-
-                <Text style={styles.titleData}>
-                  {monthName}, {day}
+                <Text onPress={() => navigation.navigate('Settings' as never)} style={styles.text}>
+                  Settings
                 </Text>
               </View>
 
-              <FlatList
-                data={dayForecast}
-                horizontal={true}
-                keyExtractor={(item) => String(item.dt)}
-                ItemSeparatorComponent={() => <View style={{ width: 20 }} />}
-                renderItem={({ item }) => (
-                  <View>
-                    <Text style={styles.infoText}>{Math.round(item.main.temp - 273.15)}°C</Text>
+              <View>
+                <Logo height="180px" />
+              </View>
+
+              <Text style={styles.temp}>
+                {Math.round(forecastData.list[0].main.temp - 273.15)}°
+              </Text>
+
+              <Text style={styles.description}>
+                {forecastData.list[0].weather[0].main}
+                {'\n'}
+                Max.{Math.round(forecastData.list[0].main.temp_max - 273.15)}° Min.
+                {Math.round(forecastData.list[0].main.temp_min - 273.15)}°
+              </Text>
+
+              <View style={styles.weatherBlock}>
+                <View style={styles.currentWeather}>
+                  <View style={styles.currentWeatherData}>
+                    <Rain height="28px" width="28px" />
+                    <Text style={styles.currentWeatherText}>
+                      {Math.round(forecastData.list[0].pop * 100)}%
+                    </Text>
+                  </View>
+
+                  <View style={styles.currentWeatherData}>
+                    <Humidity height="28px" width="20px" />
+                    <Text style={styles.currentWeatherText}>
+                      {forecastData.list[0].main.humidity}%
+                    </Text>
+                  </View>
+
+                  <View style={styles.currentWeatherData}>
+                    <Wind height="28px" width="28px" />
+                    <Text style={styles.currentWeatherText}>
+                      {Math.round(forecastData.list[0].wind.speed * 3.6)}km/h
+                    </Text>
+                  </View>
+                </View>
+              </View>
+
+              <View style={styles.weatherBlock}>
+                <View style={styles.weatherBlockTitle}>
+                  <Text style={styles.title}>Today</Text>
+
+                  <Text style={styles.titleData}>
+                    {monthName}, {day}
+                  </Text>
+                </View>
+
+                <FlatList
+                  data={dayForecast}
+                  horizontal={true}
+                  keyExtractor={(item) => String(item.dt)}
+                  ItemSeparatorComponent={() => <View style={{ width: 20 }} />}
+                  renderItem={({ item }) => (
+                    <View>
+                      <Text style={styles.infoText}>{Math.round(item.main.temp - 273.15)}°C</Text>
+
+                      <Logo height="56px" width="56px" />
+
+                      <Text style={styles.infoText}>
+                        {new Date(item.dt * 1000).getHours().toFixed(2)}
+                      </Text>
+                    </View>
+                  )}
+                />
+              </View>
+
+              <View style={styles.weatherBlock}>
+                <Text style={styles.nextForecastTitle}>Next Forecast</Text>
+
+                {nextForecast.map((day) => (
+                  <View style={styles.nextForecast} key={day.dt}>
+                    <Text style={styles.nextForecastDay}>
+                      {
+                        new Date(day.dt * 1000)
+                          .toLocaleString('en-US', { weekday: 'short' })
+                          .split(',')[0]
+                      }
+                    </Text>
 
                     <Logo height="56px" width="56px" />
 
-                    <Text style={styles.infoText}>
-                      {new Date(item.dt * 1000).getHours().toFixed(2)}
+                    <Text style={styles.nextForecastDay}>
+                      {Math.round(day.main.temp - 273.15)}°C
                     </Text>
                   </View>
-                )}
-              />
+                ))}
+              </View>
             </View>
-
-            <View style={styles.weatherBlock}>
-              <Text style={styles.nextForecastTitle}>Next Forecast</Text>
-
-              {nextForecast.map((day) => (
-                <View style={styles.nextForecast} key={day.dt}>
-                  <Text style={styles.nextForecastDay}>
-                    {
-                      new Date(day.dt * 1000)
-                        .toLocaleString('default', { weekday: 'short' })
-                        .split(',')[0]
-                    }
-                  </Text>
-
-                  <Logo height="56px" width="56px" />
-
-                  <Text style={styles.nextForecastDay}>{Math.round(day.main.temp - 273.15)}°C</Text>
-                </View>
-              ))}
-            </View>
-          </View>
-        </ScrollView>
+          </ScrollView>
+        </SafeAreaView>
       </LinearGradient>
     );
   }

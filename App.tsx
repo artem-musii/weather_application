@@ -14,7 +14,7 @@ function App() {
       <NavigationContainer>
         <Stack.Navigator initialRouteName="Forecast">
           <Stack.Screen name="Forecast" component={ForecastData} options={{ headerShown: false }} />
-          <Stack.Screen name="Settings" component={Settings} />
+          <Stack.Screen name="Settings" component={Settings} options={{ headerShown: false }} />
         </Stack.Navigator>
       </NavigationContainer>
     </QueryClientProvider>
