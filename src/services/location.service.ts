@@ -1,5 +1,5 @@
-import Geolocation from '@react-native-community/geolocation';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Location from 'expo-location';
 
 interface Position {
   coords: {
@@ -8,18 +8,13 @@ interface Position {
   };
 }
 
-export const setLocation = async () => {
+export const setCurrentLocation = async () => {
   try {
-    const position: Position = await new Promise((resolve, reject) => {
-      Geolocation.getCurrentPosition(resolve, reject, {
-        enableHighAccuracy: true,
-        timeout: 20000,
-        maximumAge: 1000,
-      });
-    });
-    const lat = position.coords.latitude || 0;
-    const lon = position.coords.longitude || 0;
-    console.log(lat, lon);
+    await AsyncStorage.removeItem('lat');
+    await AsyncStorage.removeItem('lon');
+    const position: Position = await Location.getCurrentPositionAsync({});
+    const lat = position.coords.latitude || 50.45;
+    const lon = position.coords.longitude || 30.523;
     await AsyncStorage.setItem('lat', String(lat));
     await AsyncStorage.setItem('lon', String(lon));
   } catch {

@@ -32,3 +32,13 @@ export interface IForecast {
   city: ICity;
   list: IWeather[];
 }
+
+export interface ISuggestion {
+  id: number;
+  name: string;
+  coord: ICoords;
+}
+
+export interface ISuggestions {
+  list: ISuggestion[];
+}
