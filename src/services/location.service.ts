@@ -10,14 +10,13 @@ interface Position {
 
 export const setCurrentLocation = async () => {
   try {
-    await AsyncStorage.removeItem('lat');
-    await AsyncStorage.removeItem('lon');
     const position: Position = await Location.getCurrentPositionAsync({});
-    const lat = position.coords.latitude || 50.45;
-    const lon = position.coords.longitude || 30.523;
+    const lat = position.coords.latitude;
+    const lon = position.coords.longitude;
     await AsyncStorage.setItem('lat', String(lat));
     await AsyncStorage.setItem('lon', String(lon));
   } catch {
-    throw new Error('Something went wrong');
+    await AsyncStorage.setItem('lat', String(50.4333));
+    await AsyncStorage.setItem('lat', String(30.5167));
   }
 };

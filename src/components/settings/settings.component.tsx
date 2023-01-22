@@ -1,16 +1,19 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { View, Text, SafeAreaView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import RNPickerSelect from 'react-native-picker-select';
 import { LinearGradient } from 'expo-linear-gradient';
 import { pickerSelectStyles, settingsStyles } from './settings.styles';
-import { setUnits } from '../../services/units.service';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useDispatch, useSelector } from 'react-redux';
+import { WeatherState } from '../../store/reducer';
+import { setTemperatureUnit, setWindSpeedUnit } from '../../store/reducer';
 
 export const Settings: React.FC = () => {
   const navigation = useNavigation();
-  const [temperatureUnit, setTemperatureUnit] = useState('Celsius');
-  const [windSpeedUnit, setWindSpeedUnit] = useState('Km/h');
+  const dispatch = useDispatch();
+  const weather = useSelector((state: { weather: WeatherState }) => state.weather);
+  const { temperatureUnit, windSpeedUnit } = weather;
 
   void (async () => {
     const temp = await AsyncStorage.getItem('temp');
@@ -32,14 +35,12 @@ export const Settings: React.FC = () => {
     setWindSpeedUnit(wind);
   })();
 
-  const handleWindSpeedUnitChange = async (value: string) => {
-    await setUnits('wind', value);
-    setWindSpeedUnit(value);
+  const handleWindSpeedUnitChange = (value: string) => {
+    dispatch(setWindSpeedUnit(value || 'km/h'));
   };
 
-  const handleTempUnitChange = async (value: string) => {
-    await setUnits('temp', value);
-    setTemperatureUnit(value);
+  const handleTempUnitChange = (value: string) => {
+    dispatch(setTemperatureUnit(value));
   };
 
   const temperatureUnits = [
@@ -49,7 +50,7 @@ export const Settings: React.FC = () => {
   ];
 
   const windSpeedUnits = [
-    { label: 'Km/h', value: 'Km/h' },
+    { label: 'km/h', value: 'km/h' },
     { label: 'm/s', value: 'm/s' },
     { label: 'Mph', value: 'Mph' },
   ];
@@ -68,11 +69,7 @@ export const Settings: React.FC = () => {
           <RNPickerSelect
             items={temperatureUnits}
             value={temperatureUnit}
-            onValueChange={(itemValue: string) => {
-              void (async () => {
-                await handleTempUnitChange(itemValue);
-              })();
-            }}
+            onValueChange={handleTempUnitChange}
             style={pickerSelectStyles}
             placeholder={{}}
           />
@@ -81,11 +78,7 @@ export const Settings: React.FC = () => {
           <RNPickerSelect
             items={windSpeedUnits}
             value={windSpeedUnit}
-            onValueChange={(itemValue: string) => {
-              void (async () => {
-                await handleWindSpeedUnitChange(itemValue);
-              })();
-            }}
+            onValueChange={handleWindSpeedUnitChange}
             style={pickerSelectStyles}
             placeholder={{}}
           />

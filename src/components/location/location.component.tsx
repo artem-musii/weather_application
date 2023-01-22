@@ -1,33 +1,21 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useState } from 'react';
-import { ISuggestions, ISuggestion } from '../types/forecast.type';
-import {
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-  SafeAreaView,
-  FlatList,
-  StyleSheet,
-  Dimensions,
-} from 'react-native';
-import { setCurrentLocation } from '../services/location.service';
+import { ISuggestions, ISuggestion, ICoords } from '../../types/forecast.type';
+import { Text, TextInput, TouchableOpacity, View, SafeAreaView, FlatList } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
+import { locationStyles } from './location.styles';
+import { useDispatch } from 'react-redux';
+import { setLat, setLon } from '../../store/reducer';
 
 export const Location: React.FC = () => {
   const navigation = useNavigation();
+  const dispatch = useDispatch();
 
-  const handleSelection = () => {
-    void (async () => {
-      try {
-        await setCurrentLocation();
-      } catch (error) {
-        console.log(error);
-      }
-      navigation.navigate('Forecast' as never);
-      await setCurrentLocation();
-    })();
+  const handleSelection = (coords: ICoords) => {
+    dispatch(setLat(String(coords.lat)));
+    dispatch(setLon(String(coords.lon)));
+    navigation.navigate('Forecast' as never);
   };
 
   const [suggestions, setSuggestions] = useState<ISuggestion[]>([]);
@@ -39,6 +27,7 @@ export const Location: React.FC = () => {
     try {
       const response: { data: ISuggestions } = await axios.get(weatherAPIUrl);
       const currentSuggestions: ISuggestions = response.data;
+      console.log(currentSuggestions);
 
       setSuggestions(currentSuggestions.list);
     } catch (err) {
@@ -46,46 +35,16 @@ export const Location: React.FC = () => {
     }
   };
 
-  const screenHeight = Dimensions.get('screen').height;
-
-  const styles = StyleSheet.create({
-    container: {
-      height: screenHeight,
-      paddingTop: 40,
-      paddingHorizontal: 40,
-    },
-    back: {
-      marginBottom: 40,
-      fontSize: 20,
-      color: '#fff',
-    },
-    input: {
-      width: '100%',
-      padding: 16,
-      backgroundColor: 'rgba(16, 64, 132, 0.3)',
-      marginBottom: 40,
-      borderRadius: 20,
-    },
-    suggestion: {
-      width: '100%',
-      padding: 16,
-      backgroundColor: 'rgba(16, 64, 132, 0.3)',
-      color: '#fff',
-      marginBottom: 10,
-    },
-  });
-
   return (
-    <LinearGradient colors={['#29b2dd', '#3ad', '#2dc8ea']}>
+    <LinearGradient style={{ flex: 1 }} colors={['#29b2dd', '#3ad', '#2dc8ea']}>
       <SafeAreaView>
-        {/* <ScrollView> */}
-        <View style={styles.container}>
+        <View style={locationStyles.container}>
           <TouchableOpacity onPress={() => navigation.navigate('Forecast' as never)}>
-            <Text style={styles.back}>{'<'} Go back</Text>
+            <Text style={locationStyles.back}>{'<'} Go back</Text>
           </TouchableOpacity>
 
           <TextInput
-            style={styles.input}
+            style={locationStyles.input}
             onChange={(e) => {
               void (async () => await getSuggestions(e.nativeEvent.text))();
             }}
@@ -96,8 +55,8 @@ export const Location: React.FC = () => {
           <FlatList
             data={suggestions}
             renderItem={({ item }) => (
-              <TouchableOpacity onPress={() => handleSelection()}>
-                <Text style={styles.suggestion}>{item.name}</Text>
+              <TouchableOpacity onPress={() => handleSelection(item.coord)}>
+                <Text style={locationStyles.suggestion}>{item.name}</Text>
               </TouchableOpacity>
             )}
             keyExtractor={(item) => String(item.id)}

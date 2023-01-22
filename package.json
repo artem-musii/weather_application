@@ -13,6 +13,7 @@
     "@react-native-community/geolocation": "^3.0.5",
     "@react-navigation/native": "^6.1.2",
     "@react-navigation/stack": "^6.3.11",
+    "@reduxjs/toolkit": "^1.9.1",
     "@trysound/sax": "^0.2.0",
     "axios": "^1.2.2",
     "choco": "^0.2.1",
@@ -36,12 +37,14 @@
     "react-native-vector-icons": "^9.2.0",
     "react-native-web": "~0.18.9",
     "react-query": "^3.39.2",
+    "react-redux": "^8.0.5",
     "svg-parser": "^2.0.4"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
     "@babel/preset-env": "^7.14.0",
     "@babel/runtime": "^7.12.5",
+    "@expo/webpack-config": "^0.17.2",
     "@react-native-community/eslint-config": "^3.0.0",
     "@tsconfig/react-native": "^2.0.2",
     "@types/jest": "^29.2.1",

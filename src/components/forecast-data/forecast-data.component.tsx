@@ -1,46 +1,45 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useQuery } from 'react-query';
-import { Text, View, FlatList, ScrollView, SafeAreaView, TouchableOpacity } from 'react-native';
+import {
+  Text,
+  View,
+  FlatList,
+  ScrollView,
+  SafeAreaView,
+  TouchableOpacity,
+  StatusBar,
+} from 'react-native';
 import { requestLocationPermission } from '../../services/permissions.service';
 import { useNavigation } from '@react-navigation/native';
 import { getForecast } from '../../services/forecast.service';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
 import { WeatherIcon } from '../../helpers/weather-icon';
 import { WeatherCondition } from '../../enums/weather-conditions';
 import { forecastStyles } from './forecast-data.styles';
 import Spinner from 'react-native-loading-spinner-overlay';
+import { IWeather } from '../../types/forecast.type';
+import { useSelector } from 'react-redux';
+import { WeatherState } from '../../store/reducer';
 
 export const ForecastData: React.FC = () => {
-  const { data: forecastData } = useQuery('forecast', getForecast);
-  const [lat, setLat] = useState<null | string>(null);
-  const [lon, setLon] = useState<null | string>(null);
-  const [temperatureUnit, setTemperatureUnit] = useState('Celsius');
-  const [windSpeedUnit, setWindSpeedUnit] = useState('Km/h');
+  const weather = useSelector((state: { weather: WeatherState }) => state.weather);
   const navigation = useNavigation();
+  const { lat, lon } = useSelector((state: { weather: WeatherState }) => state.weather);
+  const { data: forecastData, refetch } = useQuery('forecast', async () => {
+    if (lat && lon) {
+      const response = await getForecast(lat, lon);
+      console.log(lat, lon);
 
-  void (async () => {
-    const temp = await AsyncStorage.getItem('temp');
-    const wind = await AsyncStorage.getItem('wind');
+      return response;
+    } else {
+      const response = await getForecast('0', '0');
 
-    if (!temp) {
-      await AsyncStorage.setItem('temp', temperatureUnit);
-
-      return;
+      return response;
     }
-
-    if (!wind) {
-      await AsyncStorage.setItem('wind', windSpeedUnit);
-
-      return;
-    }
-
-    setTemperatureUnit(temp);
-    setWindSpeedUnit(wind);
-  })();
+  });
 
   const convertTemp = (temp: number) => {
-    switch (temperatureUnit) {
+    switch (weather.temperatureUnit) {
       case 'Celsius':
         return Math.round(temp - 273.15);
       case 'Fahrenheit':
@@ -50,15 +49,32 @@ export const ForecastData: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    void (async () => {
-      await requestLocationPermission();
-      console.log(lat, lon);
+  const convertSpeed = (speed: number) => {
+    switch (weather.windSpeedUnit) {
+      case 'km/h':
+        return Math.round(speed * 3.6);
+      case 'Mph':
+        return Math.round(speed * 2.237);
+      default:
+        return Math.round(speed);
+    }
+  };
 
-      setLat(await AsyncStorage.getItem('lat'));
-      setLon(await AsyncStorage.getItem('lon'));
-    })();
-  }, [lat, lon, temperatureUnit, windSpeedUnit]);
+  const getMin = (forecast: IWeather[]) => {
+    return forecast.reduce((min, day) => Math.min(min, day.main.temp_min), Infinity);
+  };
+
+  const getMax = (forecast: IWeather[]) => {
+    return forecast.reduce((max, day) => Math.max(max, day.main.temp_min), -Infinity);
+  };
+
+  useEffect(() => {
+    void (async () => refetch())();
+  }, [refetch, weather]);
+
+  useEffect(() => {
+    void (async () => requestLocationPermission())();
+  }, []);
 
   if (forecastData) {
     const dayForecast = forecastData.list.slice(0, 8);
@@ -68,12 +84,13 @@ export const ForecastData: React.FC = () => {
     const monthName = date.toLocaleString('en-US', { month: 'short' });
     const currentCondition = forecastData.list[0].weather[0].main;
     const forecastInfo = forecastData.list;
-    const currentTempLetter = temperatureUnit.slice(0, 1);
+    const currentTempLetter = weather.temperatureUnit.slice(0, 1);
 
     return (
       <LinearGradient colors={['#29b2dd', '#3ad', '#2dc8ea']}>
         <SafeAreaView>
           <ScrollView>
+            <StatusBar />
             <View style={forecastStyles.container}>
               <View style={forecastStyles.header}>
                 <TouchableOpacity>
@@ -106,8 +123,8 @@ export const ForecastData: React.FC = () => {
               <Text style={forecastStyles.description}>
                 {forecastInfo[0].weather[0].main}
                 {'\n'}
-                Max.{convertTemp(forecastData.list[0].main.temp_max)}° Min.
-                {convertTemp(forecastInfo[0].main.temp_min)}°
+                Max.{convertTemp(getMax(forecastInfo.slice(0, 8)))}° Min.
+                {convertTemp(getMin(forecastInfo.slice(0, 8)))}°
               </Text>
 
               <View style={forecastStyles.weatherBlock}>
@@ -133,7 +150,8 @@ export const ForecastData: React.FC = () => {
                   <View style={forecastStyles.currentWeatherData}>
                     <WeatherIcon condition={WeatherCondition.Wind} height="28px" width="28px" />
                     <Text style={forecastStyles.currentWeatherText}>
-                      {Math.round(forecastInfo[0].wind.speed * 3.6)}km/h
+                      {convertSpeed(forecastInfo[0].wind.speed)}
+                      {weather.windSpeedUnit}
                     </Text>
                   </View>
                 </View>
@@ -144,7 +162,7 @@ export const ForecastData: React.FC = () => {
                   <Text style={forecastStyles.title}>Today</Text>
 
                   <Text style={forecastStyles.titleData}>
-                    {monthName}, {day}
+                    {monthName.slice(3, 7)}, {day.slice(8, 10)}
                   </Text>
                 </View>
 
@@ -172,21 +190,28 @@ export const ForecastData: React.FC = () => {
               <View style={forecastStyles.weatherBlock}>
                 <Text style={forecastStyles.nextForecastTitle}>Next Forecast</Text>
 
-                {nextForecast.map((day) => (
+                {nextForecast.map((day, i) => (
                   <View style={forecastStyles.nextForecast} key={day.dt}>
                     <Text style={forecastStyles.nextForecastDay}>
-                      {
-                        new Date(day.dt * 1000)
-                          .toLocaleString('en-US', { weekday: 'short' })
-                          .split(',')[0]
-                      }
+                      {new Date(day.dt * 1000)
+                        .toLocaleString('en-US', { weekday: 'short' })
+                        .slice(0, 3)}
                     </Text>
 
                     <WeatherIcon condition={day.weather[0].main} height="56px" width="56px" />
 
-                    <Text style={forecastStyles.nextForecastDay}>
-                      {convertTemp(day.main.temp)}°{currentTempLetter}
-                    </Text>
+                    <View style={{ display: 'flex', flexDirection: 'row' }}>
+                      <Text style={forecastStyles.nextForecastDay}>
+                        {convertTemp(getMax(forecastInfo.slice(8 * i, 8 * i + 8)))}°
+                        {currentTempLetter}
+                        {'  '}
+                      </Text>
+
+                      <Text style={forecastStyles.nextForecastDayOpacity}>
+                        {convertTemp(getMin(forecastInfo.slice(8 * i, 8 * i + 8)))}°
+                        {currentTempLetter}
+                      </Text>
+                    </View>
                   </View>
                 ))}
               </View>

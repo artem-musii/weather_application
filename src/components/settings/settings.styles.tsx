@@ -1,15 +1,10 @@
 import { StyleSheet } from 'react-native';
-import { Dimensions } from 'react-native';
-
-const screenHeight = Dimensions.get('screen').height;
 
 export const settingsStyles = StyleSheet.create({
   container: {
     display: 'flex',
     padding: 40,
     width: '100%',
-    flex: 1,
-    minHeight: screenHeight,
   },
   label: {
     fontWeight: 'bold',

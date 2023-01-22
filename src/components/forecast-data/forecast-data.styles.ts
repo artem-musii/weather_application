@@ -95,4 +95,9 @@ export const forecastStyles = StyleSheet.create({
     fontSize: 18,
     color: '#fff',
   },
+  nextForecastDayOpacity: {
+    fontSize: 18,
+    color: '#fff',
+    opacity: 0.5,
+  },
 });
