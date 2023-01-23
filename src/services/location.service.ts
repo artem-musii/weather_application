@@ -1,4 +1,3 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Location from 'expo-location';
 
 interface Position {
@@ -13,10 +12,12 @@ export const setCurrentLocation = async () => {
     const position: Position = await Location.getCurrentPositionAsync({});
     const lat = position.coords.latitude;
     const lon = position.coords.longitude;
-    await AsyncStorage.setItem('lat', String(lat));
-    await AsyncStorage.setItem('lon', String(lon));
+
+    return { lat, lon };
   } catch {
-    await AsyncStorage.setItem('lat', String(50.4333));
-    await AsyncStorage.setItem('lat', String(30.5167));
+    const lat = 50.4333;
+    const lon = 30.5167;
+
+    return { lat, lon };
   }
 };

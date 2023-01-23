@@ -37,6 +37,7 @@ export interface ISuggestion {
   id: number;
   name: string;
   coord: ICoords;
+  sys: { country: string };
 }
 
 export interface ISuggestions {

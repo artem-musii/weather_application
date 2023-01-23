@@ -21,7 +21,7 @@ export const Location: React.FC = () => {
   const [suggestions, setSuggestions] = useState<ISuggestion[]>([]);
 
   const getSuggestions = async (text: string) => {
-    console.log(text);
+    console.log(text, suggestions.length);
     const weatherAPIKey = '35bcd86aaa2f86e435cf470a0a344c7e';
     const weatherAPIUrl = `http://api.openweathermap.org/data/2.5/find?q=${text}&appid=${weatherAPIKey}`;
     try {
@@ -30,8 +30,8 @@ export const Location: React.FC = () => {
       console.log(currentSuggestions);
 
       setSuggestions(currentSuggestions.list);
-    } catch (err) {
-      throw new Error('Something went wrong');
+    } catch {
+      setSuggestions([]);
     }
   };
 
@@ -56,10 +56,14 @@ export const Location: React.FC = () => {
             data={suggestions}
             renderItem={({ item }) => (
               <TouchableOpacity onPress={() => handleSelection(item.coord)}>
-                <Text style={locationStyles.suggestion}>{item.name}</Text>
+                <Text style={locationStyles.suggestion}>
+                  {item.name}
+                  {', '}
+                  {item.sys.country}
+                </Text>
               </TouchableOpacity>
             )}
-            keyExtractor={(item) => String(item.id)}
+            keyExtractor={(item) => String(item.coord.lat)}
           />
         </View>
       </SafeAreaView>

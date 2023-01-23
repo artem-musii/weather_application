@@ -1,22 +1,28 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { WindSpeedUnits } from '../enums/wind-speed-units';
 
 export interface WeatherState {
   lat: string | null;
   lon: string | null;
   temperatureUnit: string;
-  windSpeedUnit: string;
+  windSpeedUnits: WindSpeedUnits;
 }
 
 const initialState: WeatherState = {
   lat: null,
   lon: null,
   temperatureUnit: 'Celsius',
-  windSpeedUnit: 'km/h',
+  windSpeedUnits: WindSpeedUnits.KM,
 };
 
 type CoordsAction = {
   type: string;
   payload: string | null;
+};
+
+type SpeedAction = {
+  type: string;
+  payload: WindSpeedUnits;
 };
 
 type UnitsAction = {
@@ -37,8 +43,8 @@ const weatherSlice = createSlice({
     setTemperatureUnit: (state, action: UnitsAction) => {
       state.temperatureUnit = action.payload;
     },
-    setWindSpeedUnit: (state, action: UnitsAction) => {
-      state.windSpeedUnit = action.payload;
+    setWindSpeedUnit: (state, action: SpeedAction) => {
+      state.windSpeedUnits = action.payload;
     },
   },
 });

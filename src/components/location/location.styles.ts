@@ -19,7 +19,8 @@ export const locationStyles = StyleSheet.create({
     color: '#fff',
   },
   suggestion: {
-    width: '100%',
+    display: 'flex',
+    justifyContent: 'space-between',
     padding: 16,
     backgroundColor: 'rgba(16, 64, 132, 0.3)',
     color: '#fff',

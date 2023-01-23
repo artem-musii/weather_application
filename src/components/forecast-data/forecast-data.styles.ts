@@ -48,7 +48,6 @@ export const forecastStyles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-start',
     alignItems: 'center',
-    gap: 8,
   },
   weatherBlock: {
     padding: 16,
