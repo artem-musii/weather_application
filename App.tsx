@@ -7,6 +7,7 @@ import { Settings } from './src/components/settings/settings.component';
 import { Location } from './src/components/location/location.component';
 import { Provider } from 'react-redux';
 import store from './src/store/store';
+import { ROUTER_KEYS } from './src/app-keys/app-keys';
 
 function App() {
   const queryClinet = new QueryClient();
@@ -16,14 +17,22 @@ function App() {
     <Provider store={store}>
       <QueryClientProvider client={queryClinet}>
         <NavigationContainer>
-          <Stack.Navigator initialRouteName="Forecast">
+          <Stack.Navigator initialRouteName={ROUTER_KEYS.FORECAST}>
             <Stack.Screen
-              name="Forecast"
+              name={ROUTER_KEYS.FORECAST}
               component={ForecastData}
               options={{ headerShown: false }}
             />
-            <Stack.Screen name="Settings" component={Settings} options={{ headerShown: false }} />
-            <Stack.Screen name="Location" component={Location} options={{ headerShown: false }} />
+            <Stack.Screen
+              name={ROUTER_KEYS.SETTINGS}
+              component={Settings}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name={ROUTER_KEYS.LOCATION}
+              component={Location}
+              options={{ headerShown: false }}
+            />
           </Stack.Navigator>
         </NavigationContainer>
       </QueryClientProvider>

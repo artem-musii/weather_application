@@ -1,12 +1,15 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useState } from 'react';
-import { ISuggestions, ISuggestion, ICoords } from '../../types/forecast.type';
+import { ISuggestions, ISuggestion, ICoords } from '../../types';
 import { Text, TextInput, TouchableOpacity, View, SafeAreaView, FlatList } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import { locationStyles } from './location.styles';
 import { useDispatch } from 'react-redux';
 import { setLat, setLon } from '../../store/reducer';
+import { API_KEYS } from '../../app-keys/app-keys';
+import { COLORS } from '../../consts/colors';
+import { ROUTER_KEYS } from '../../app-keys/app-keys';
 
 export const Location: React.FC = () => {
   const navigation = useNavigation();
@@ -15,19 +18,16 @@ export const Location: React.FC = () => {
   const handleSelection = (coords: ICoords) => {
     dispatch(setLat(String(coords.lat)));
     dispatch(setLon(String(coords.lon)));
-    navigation.navigate('Forecast' as never);
+    navigation.navigate(ROUTER_KEYS.FORECAST as never);
   };
 
   const [suggestions, setSuggestions] = useState<ISuggestion[]>([]);
 
   const getSuggestions = async (text: string) => {
-    console.log(text, suggestions.length);
-    const weatherAPIKey = '35bcd86aaa2f86e435cf470a0a344c7e';
-    const weatherAPIUrl = `http://api.openweathermap.org/data/2.5/find?q=${text}&appid=${weatherAPIKey}`;
+    const weatherAPIUrl = `${API_KEYS.API_URL}find?q=${text}&appid=${API_KEYS.API_KEY}`;
     try {
       const response: { data: ISuggestions } = await axios.get(weatherAPIUrl);
       const currentSuggestions: ISuggestions = response.data;
-      console.log(currentSuggestions);
 
       setSuggestions(currentSuggestions.list);
     } catch {
@@ -36,10 +36,10 @@ export const Location: React.FC = () => {
   };
 
   return (
-    <LinearGradient style={{ flex: 1 }} colors={['#29b2dd', '#3ad', '#2dc8ea']}>
+    <LinearGradient style={{ flex: 1 }} colors={COLORS.GRADIENT}>
       <SafeAreaView>
         <View style={locationStyles.container}>
-          <TouchableOpacity onPress={() => navigation.navigate('Forecast' as never)}>
+          <TouchableOpacity onPress={() => navigation.navigate(ROUTER_KEYS.FORECAST as never)}>
             <Text style={locationStyles.back}>{'<'} Go back</Text>
           </TouchableOpacity>
 

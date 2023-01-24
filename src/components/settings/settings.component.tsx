@@ -4,70 +4,53 @@ import { useNavigation } from '@react-navigation/native';
 import RNPickerSelect from 'react-native-picker-select';
 import { LinearGradient } from 'expo-linear-gradient';
 import { pickerSelectStyles, settingsStyles } from './settings.styles';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useDispatch, useSelector } from 'react-redux';
 import { WeatherState } from '../../store/reducer';
 import { setTemperatureUnit, setWindSpeedUnit } from '../../store/reducer';
+import { WindSpeedUnits } from '../../enums/wind-speed-units';
+import { WeatherTempUnits } from '../../enums/weather-temp-units';
+import { COLORS } from '../../consts/colors';
+import { ROUTER_KEYS } from '../../app-keys/app-keys';
 
 export const Settings: React.FC = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const weather = useSelector((state: { weather: WeatherState }) => state.weather);
-  const { temperatureUnit, windSpeedUnit } = weather;
+  const { temperatureUnit, windSpeedUnits } = weather;
 
-  void (async () => {
-    const temp = await AsyncStorage.getItem('temp');
-    const wind = await AsyncStorage.getItem('wind');
-
-    if (!temp) {
-      await AsyncStorage.setItem('temp', temperatureUnit);
-
-      return;
-    }
-
-    if (!wind) {
-      await AsyncStorage.setItem('wind', windSpeedUnit);
-
-      return;
-    }
-
-    setTemperatureUnit(temp);
-    setWindSpeedUnit(wind);
-  })();
-
-  const handleWindSpeedUnitChange = (value: string) => {
-    dispatch(setWindSpeedUnit(value || 'km/h'));
+  const handleWindSpeedUnitChange = (value: WindSpeedUnits) => {
+    dispatch(setWindSpeedUnit(value));
   };
 
-  const handleTempUnitChange = (value: string) => {
+  const handleTempUnitChange = (value: WeatherTempUnits) => {
     dispatch(setTemperatureUnit(value));
   };
 
-  const temperatureUnits = [
+  const temparatureData = [
     { label: 'Celsius', value: 'Celsius' },
     { label: 'Fahrenheit', value: 'Fahrenheit' },
     { label: 'Kelvin', value: 'Kelvin' },
   ];
 
-  const windSpeedUnits = [
+  const windSpeedData = [
     { label: 'km/h', value: 'km/h' },
     { label: 'm/s', value: 'm/s' },
     { label: 'Mph', value: 'Mph' },
   ];
 
   return (
-    <LinearGradient style={{ flex: 1 }} colors={['#29b2dd', '#3ad', '#2dc8ea']}>
+    <LinearGradient style={{ flex: 1 }} colors={COLORS.GRADIENT}>
       <SafeAreaView>
         <View style={settingsStyles.container}>
           <Text
             style={settingsStyles.back}
-            onPress={() => navigation.navigate('Forecast' as never)}
+            onPress={() => navigation.navigate(ROUTER_KEYS.FORECAST as never)}
           >
             {'<'} Go back
           </Text>
           <Text style={settingsStyles.label}>Temperature Unit:</Text>
           <RNPickerSelect
-            items={temperatureUnits}
+            items={temparatureData}
             value={temperatureUnit}
             onValueChange={handleTempUnitChange}
             style={pickerSelectStyles}
@@ -76,8 +59,8 @@ export const Settings: React.FC = () => {
 
           <Text style={settingsStyles.label}>Wind Speed Unit:</Text>
           <RNPickerSelect
-            items={windSpeedUnits}
-            value={windSpeedUnit}
+            items={windSpeedData}
+            value={windSpeedUnits}
             onValueChange={handleWindSpeedUnitChange}
             style={pickerSelectStyles}
             placeholder={{}}

@@ -1,49 +1,48 @@
 import { StyleSheet } from 'react-native';
+import { COLORS } from '../../consts/colors';
+import { SIZES } from '../../consts/sizes';
 
 export const settingsStyles = StyleSheet.create({
   container: {
-    display: 'flex',
-    padding: 40,
+    padding: SIZES.l,
     width: '100%',
   },
   label: {
     fontWeight: 'bold',
-    marginBottom: 10,
-    color: '#fff',
+    marginBottom: SIZES.s,
+    color: COLORS.WHITE,
   },
   picker: {
-    height: 50,
+    height: SIZES.xl,
     width: '100%',
     borderWidth: 0,
     borderColor: 'gray',
-    padding: 10,
+    padding: SIZES.s,
   },
   back: {
-    marginBottom: 40,
-    fontSize: 20,
-    color: '#fff',
+    marginBottom: SIZES.l,
+    fontSize: SIZES.m,
+    color: COLORS.WHITE,
   },
 });
 
 export const pickerSelectStyles = StyleSheet.create({
   inputIOS: {
-    fontSize: 16,
-    paddingVertical: 12,
-    paddingHorizontal: 10,
+    fontSize: SIZES.m,
+    padding: SIZES.m,
     backgroundColor: 'rgba(16, 64, 132, 0.3)',
-    borderRadius: 8,
-    color: 'white',
-    paddingRight: 30,
-    marginBottom: 24,
+    borderRadius: SIZES.s,
+    color: COLORS.WHITE,
+    marginBottom: SIZES.m,
   },
   inputAndroid: {
-    fontSize: 16,
-    paddingHorizontal: 10,
-    paddingVertical: 8,
+    fontSize: SIZES.m,
+    paddingHorizontal: SIZES.s,
+    paddingVertical: SIZES.s,
     backgroundColor: 'rgba(16, 64, 132, 0.3)',
-    borderRadius: 8,
-    color: 'white',
-    paddingRight: 30,
-    marginBottom: 20,
+    borderRadius: SIZES.s,
+    color: COLORS.WHITE,
+    paddingRight: SIZES.l,
+    marginBottom: SIZES.m,
   },
 });

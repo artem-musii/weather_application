@@ -1,8 +1,8 @@
 import { StyleSheet } from 'react-native';
+import { COLORS } from '../../consts/colors';
 
 export const headerStyles = StyleSheet.create({
   header: {
-    display: 'flex',
     width: '100%',
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -10,6 +10,6 @@ export const headerStyles = StyleSheet.create({
   },
   title: {
     fontSize: 18,
-    color: '#fff',
+    color: COLORS.WHITE,
   },
 });

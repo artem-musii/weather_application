@@ -1,29 +1,30 @@
 import { StyleSheet } from 'react-native';
+import { COLORS } from '../../consts/colors';
+import { SIZES } from '../../consts/sizes';
 
 export const locationStyles = StyleSheet.create({
   container: {
-    paddingTop: 40,
-    paddingHorizontal: 40,
+    paddingTop: SIZES.l,
+    paddingHorizontal: SIZES.l,
   },
   back: {
-    marginBottom: 40,
-    fontSize: 20,
-    color: '#fff',
+    marginBottom: SIZES.l,
+    fontSize: SIZES.m,
+    color: COLORS.WHITE,
   },
   input: {
     width: '100%',
-    padding: 16,
+    padding: SIZES.m,
     backgroundColor: 'rgba(16, 64, 132, 0.3)',
-    marginBottom: 40,
-    borderRadius: 20,
-    color: '#fff',
+    marginBottom: SIZES.l,
+    borderRadius: SIZES.m,
+    color: COLORS.WHITE,
   },
   suggestion: {
-    display: 'flex',
     justifyContent: 'space-between',
-    padding: 16,
+    padding: SIZES.m,
     backgroundColor: 'rgba(16, 64, 132, 0.3)',
-    color: '#fff',
-    marginBottom: 10,
+    color: COLORS.WHITE,
+    marginBottom: SIZES.s,
   },
 });
