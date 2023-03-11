@@ -4,7 +4,7 @@ import { COLORS } from '../../consts/colors';
 export const nextForecastStyles = StyleSheet.create({
   nextForecast: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
     alignItems: 'center',
     height: 64,
   },
